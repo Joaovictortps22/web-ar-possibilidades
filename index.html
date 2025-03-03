@@ -22,7 +22,7 @@
                   material="color: blue"
                   position="0 0 -1"
                   scale="1 1 1"
-                  animation="property: rotation; to: 0 360 360; loop: true; dur: 8000; easing: linear">
+                  rotation="0 0 0">
         </a-entity>
 
         <!-- Câmera -->
@@ -34,13 +34,26 @@
         let scale = 1;
         let isDragging = false;
         let lastX = 0, lastY = 0;
-        let rotation = { x: 0, y: 0 };
+        let rotation = { x: 0, y: 0, z: 0 };
+        let autoRotate = true; // Define se a rotação automática está ativa
+
+        // Função para rotação automática
+        function animateRotation() {
+            if (autoRotate) {
+                rotation.y += 1;
+                rotation.x += 0.5;
+                cubo.setAttribute("rotation", `${rotation.x} ${rotation.y} ${rotation.z}`);
+            }
+            requestAnimationFrame(animateRotation);
+        }
+        animateRotation();
 
         // Toque e arraste para girar manualmente
         document.addEventListener("mousedown", (event) => {
             isDragging = true;
             lastX = event.clientX;
             lastY = event.clientY;
+            autoRotate = false; // Para a rotação automática ao interagir
         });
 
         document.addEventListener("mousemove", (event) => {
@@ -60,6 +73,7 @@
 
         document.addEventListener("mouseup", () => {
             isDragging = false;
+            autoRotate = true; // Retoma rotação automática após soltar
         });
 
         // Zoom (scroll do mouse ou pinça no celular)
@@ -100,6 +114,7 @@
                 cubo.setAttribute("scale", `${scale} ${scale} ${scale}`);
             }
         });
+
     </script>
 
 </body>
