@@ -13,17 +13,17 @@
 
     <!-- Cena de AR -->
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        <!-- Luz -->
-        <a-light type="directional" position="1 2 1" intensity="1"></a-light>
-
-        <!-- Cubo Interativo -->
-        <a-entity id="cubo" 
-                  geometry="primitive: box; depth: 0.2; height: 0.2; width: 0.2" 
-                  material="color: blue"
-                  position="0 0 -1"
-                  scale="1 1 1"
-                  rotation="0 0 0">
-        </a-entity>
+        <!-- Marcador para detectar AR -->
+        <a-marker preset="hiro">
+            <!-- Cubo Interativo -->
+            <a-entity id="cubo" 
+                      geometry="primitive: box; depth: 0.2; height: 0.2; width: 0.2" 
+                      material="color: blue"
+                      position="0 0 0"
+                      scale="1 1 1"
+                      rotation="0 0 0">
+            </a-entity>
+        </a-marker>
 
         <!-- Câmera -->
         <a-entity camera></a-entity>
@@ -33,22 +33,13 @@
         let cubo = document.getElementById("cubo");
         let scale = 1;
         let isDragging = false;
+        let isMoving = false;
         let lastX = 0, lastY = 0;
         let rotation = { x: 0, y: 0, z: 0 };
+        let position = { x: 0, y: 0, z: 0 };
         let autoRotate = true; // Define se a rotação automática está ativa
 
-        // Função para rotação automática
-        function animateRotation() {
-            if (autoRotate) {
-                rotation.y += 1;
-                rotation.x += 0.5;
-                cubo.setAttribute("rotation", `${rotation.x} ${rotation.y} ${rotation.z}`);
-            }
-            requestAnimationFrame(animateRotation);
-        }
-        animateRotation();
-
-        // Toque e arraste para girar manualmente
+        // 🎥 MOVIMENTAR O CUBO NO AMBIENTE AR
         document.addEventListener("mousedown", (event) => {
             isDragging = true;
             lastX = event.clientX;
@@ -58,14 +49,22 @@
 
         document.addEventListener("mousemove", (event) => {
             if (!isDragging) return;
-            
-            let deltaX = (event.clientX - lastX) * 0.5;
-            let deltaY = (event.clientY - lastY) * 0.5;
 
-            rotation.y += deltaX;
-            rotation.x -= deltaY;
+            let deltaX = (event.clientX - lastX) * 0.005;
+            let deltaY = (event.clientY - lastY) * 0.005;
 
-            cubo.setAttribute("rotation", `${rotation.x} ${rotation.y} 0`);
+            if (event.shiftKey) { 
+                // Se segurar Shift, move o cubo no ambiente
+                position.x += deltaX;
+                position.y -= deltaY;
+                cubo.setAttribute("position", `${position.x} ${position.y} ${position.z}`);
+                isMoving = true;
+            } else {
+                // Caso contrário, rotaciona
+                rotation.y += deltaX * 50;
+                rotation.x -= deltaY * 50;
+                cubo.setAttribute("rotation", `${rotation.x} ${rotation.y} ${rotation.z}`);
+            }
 
             lastX = event.clientX;
             lastY = event.clientY;
@@ -73,47 +72,32 @@
 
         document.addEventListener("mouseup", () => {
             isDragging = false;
-            autoRotate = true; // Retoma rotação automática após soltar
+            if (!isMoving) autoRotate = true;
+            isMoving = false;
         });
 
-        // Zoom (scroll do mouse ou pinça no celular)
+        // 🖱️ ZOOM COM SCROLL DO MOUSE
         document.addEventListener("wheel", (event) => {
             scale += event.deltaY * -0.001;
             scale = Math.max(0.5, Math.min(2, scale)); // Limita entre 0.5 e 2
             cubo.setAttribute("scale", `${scale} ${scale} ${scale}`);
         });
 
-        // Toque para mudar a cor
+        // 🎨 TOQUE PARA TROCAR COR DO CUBO
         cubo.addEventListener("click", () => {
             let corAtual = cubo.getAttribute("material").color;
             cubo.setAttribute("material", "color", corAtual === "blue" ? "red" : "blue");
         });
 
-        // Controle de gestos em touch (zoom e movimento)
-        let touchStartDistance = 0;
-        let initialScale = 1;
-
-        function getTouchDistance(touches) {
-            let dx = touches[0].clientX - touches[1].clientX;
-            let dy = touches[0].clientY - touches[1].clientY;
-            return Math.sqrt(dx * dx + dy * dy);
+        // 🔄 ROTAÇÃO AUTOMÁTICA QUANDO NÃO ESTIVER INTERAGINDO
+        function animateRotation() {
+            if (autoRotate) {
+                rotation.y += 1;
+                cubo.setAttribute("rotation", `${rotation.x} ${rotation.y} ${rotation.z}`);
+            }
+            requestAnimationFrame(animateRotation);
         }
-
-        document.addEventListener("touchstart", (event) => {
-            if (event.touches.length === 2) {
-                touchStartDistance = getTouchDistance(event.touches);
-                initialScale = scale;
-            }
-        });
-
-        document.addEventListener("touchmove", (event) => {
-            if (event.touches.length === 2) {
-                let newDistance = getTouchDistance(event.touches);
-                scale = initialScale * (newDistance / touchStartDistance);
-                scale = Math.max(0.5, Math.min(2, scale)); // Limita o zoom
-                cubo.setAttribute("scale", `${scale} ${scale} ${scale}`);
-            }
-        });
+        animateRotation();
 
     </script>
 
