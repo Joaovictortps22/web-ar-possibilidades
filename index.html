@@ -19,55 +19,54 @@
 
         <!-- Cubo Interativo -->
         <a-entity id="cubo" 
-                  gps-entity-place="latitude: -23.55052; longitude: -46.633308"
                   geometry="primitive: box; depth: 0.2; height: 0.2; width: 0.2" 
                   material="color: blue"
-                  animation="property: rotation; to: 0 360 0; loop: true; dur: 5000">
+                  position="0 0 -1"
+                  scale="1 1 1">
         </a-entity>
 
-        <!-- Câmera com GPS -->
-        <a-entity gps-camera rotation-reader></a-entity>
+        <!-- Câmera -->
+        <a-entity camera></a-entity>
 
     </a-scene>
 
     <script>
         let cubo = document.getElementById("cubo");
         let scale = 1;
-        let lastX = 0, lastY = 0;
         let isDragging = false;
+        let lastX = 0, lastY = 0;
+        let rotation = { x: 0, y: 0 };
 
-        // Evento de toque inicial para mover o cubo
-        cubo.addEventListener("mousedown", (event) => {
+        // Toque e arraste para girar
+        document.addEventListener("mousedown", (event) => {
             isDragging = true;
             lastX = event.clientX;
             lastY = event.clientY;
         });
 
-        // Evento de movimento do toque para mover o cubo
         document.addEventListener("mousemove", (event) => {
             if (!isDragging) return;
+            
+            let deltaX = (event.clientX - lastX) * 0.5;
+            let deltaY = (event.clientY - lastY) * 0.5;
 
-            let deltaX = (event.clientX - lastX) * 0.005;
-            let deltaY = (event.clientY - lastY) * 0.005;
+            rotation.y += deltaX;
+            rotation.x -= deltaY;
 
-            let position = cubo.getAttribute("position");
-            position.x += deltaX;
-            position.y -= deltaY;
-            cubo.setAttribute("position", position);
+            cubo.setAttribute("rotation", `${rotation.x} ${rotation.y} 0`);
 
             lastX = event.clientX;
             lastY = event.clientY;
         });
 
-        // Soltar o cubo
         document.addEventListener("mouseup", () => {
             isDragging = false;
         });
 
-        // Zoom para aumentar/diminuir o cubo
+        // Zoom (scroll do mouse ou pinça no celular)
         document.addEventListener("wheel", (event) => {
             scale += event.deltaY * -0.001;
-            scale = Math.max(0.1, Math.min(2, scale)); // Limita entre 0.1 e 2
+            scale = Math.max(0.5, Math.min(2, scale)); // Limita entre 0.5 e 2
             cubo.setAttribute("scale", `${scale} ${scale} ${scale}`);
         });
 
@@ -77,14 +76,31 @@
             cubo.setAttribute("material", "color", corAtual === "blue" ? "red" : "blue");
         });
 
-        // Solicitar permissão de GPS
-        window.onload = function() {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                console.log("Localização obtida: ", position.coords.latitude, position.coords.longitude);
-            }, function(error) {
-                alert("Ative a localização para a AR funcionar!");
-            });
-        };
+        // Controle de gestos em touch (zoom e movimento)
+        let touchStartDistance = 0;
+        let initialScale = 1;
+
+        function getTouchDistance(touches) {
+            let dx = touches[0].clientX - touches[1].clientX;
+            let dy = touches[0].clientY - touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        document.addEventListener("touchstart", (event) => {
+            if (event.touches.length === 2) {
+                touchStartDistance = getTouchDistance(event.touches);
+                initialScale = scale;
+            }
+        });
+
+        document.addEventListener("touchmove", (event) => {
+            if (event.touches.length === 2) {
+                let newDistance = getTouchDistance(event.touches);
+                scale = initialScale * (newDistance / touchStartDistance);
+                scale = Math.max(0.5, Math.min(2, scale)); // Limita o zoom
+                cubo.setAttribute("scale", `${scale} ${scale} ${scale}`);
+            }
+        });
     </script>
 
 </body>
