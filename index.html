@@ -13,22 +13,20 @@
 
     <!-- Cena de AR -->
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        
         <!-- Luz -->
         <a-light type="directional" position="1 2 1" intensity="1"></a-light>
 
-        <!-- Cubo Interativo com GPS -->
+        <!-- Cubo Interativo -->
         <a-entity id="cubo" 
-                  gps-entity-place="latitude: -23.55052; longitude: -46.633308"
-                  geometry="primitive: box; depth: 0.3; height: 0.3; width: 0.3" 
+                  geometry="primitive: box; depth: 0.2; height: 0.2; width: 0.2" 
                   material="color: blue"
-                  position="0 0 -5"
-                  scale="1 1 1">
+                  position="0 0 -1"
+                  scale="1 1 1"
+                  animation="property: rotation; to: 0 360 360; loop: true; dur: 8000; easing: linear">
         </a-entity>
 
-        <!-- Câmera com GPS -->
-        <a-entity gps-camera rotation-reader></a-entity>
-
+        <!-- Câmera -->
+        <a-entity camera></a-entity>
     </a-scene>
 
     <script>
@@ -38,7 +36,7 @@
         let lastX = 0, lastY = 0;
         let rotation = { x: 0, y: 0 };
 
-        // Toque e arraste para girar
+        // Toque e arraste para girar manualmente
         document.addEventListener("mousedown", (event) => {
             isDragging = true;
             lastX = event.clientX;
@@ -102,16 +100,6 @@
                 cubo.setAttribute("scale", `${scale} ${scale} ${scale}`);
             }
         });
-
-        // Solicitar permissão de GPS
-        window.onload = function() {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                console.log("Localização obtida: ", position.coords.latitude, position.coords.longitude);
-                cubo.setAttribute("gps-entity-place", `latitude: ${position.coords.latitude}; longitude: ${position.coords.longitude}`);
-            }, function(error) {
-                alert("Ative a localização para a AR funcionar!");
-            });
-        };
     </script>
 
 </body>
