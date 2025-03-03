@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AR Interativo</title>
+    <title>AR Interativo - Cubo</title>
 
     <!-- Importando A-Frame e AR.js -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -11,15 +11,17 @@
 </head>
 <body style="margin: 0; overflow: hidden;">
 
-    <!-- Cena de AR com GPS -->
+    <!-- Cena de AR -->
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        
+
         <!-- Luz -->
         <a-light type="directional" position="1 2 1" intensity="1"></a-light>
 
-        <!-- Objeto 3D Interativo -->
-        <a-entity id="objeto3d" gps-entity-place="latitude: -23.55052; longitude: -46.633308"
-                  geometry="primitive: sphere; radius: 0.5" material="color: blue"
+        <!-- Cubo Interativo -->
+        <a-entity id="cubo" 
+                  gps-entity-place="latitude: -23.55052; longitude: -46.633308"
+                  geometry="primitive: box; depth: 0.2; height: 0.2; width: 0.2" 
+                  material="color: blue"
                   animation="property: rotation; to: 0 360 0; loop: true; dur: 5000">
         </a-entity>
 
@@ -29,51 +31,50 @@
     </a-scene>
 
     <script>
-        let objeto = document.getElementById("objeto3d");
+        let cubo = document.getElementById("cubo");
         let scale = 1;
         let lastX = 0, lastY = 0;
         let isDragging = false;
 
-        // Evento de toque inicial
-        objeto.addEventListener("mousedown", (event) => {
+        // Evento de toque inicial para mover o cubo
+        cubo.addEventListener("mousedown", (event) => {
             isDragging = true;
             lastX = event.clientX;
             lastY = event.clientY;
         });
 
-        // Evento de movimento do toque
+        // Evento de movimento do toque para mover o cubo
         document.addEventListener("mousemove", (event) => {
             if (!isDragging) return;
 
-            let deltaX = event.clientX - lastX;
-            let deltaY = event.clientY - lastY;
+            let deltaX = (event.clientX - lastX) * 0.005;
+            let deltaY = (event.clientY - lastY) * 0.005;
 
-            // Rotaciona o objeto ao mover
-            let rotation = objeto.getAttribute("rotation");
-            rotation.y += deltaX * 0.5;
-            rotation.x -= deltaY * 0.5;
-            objeto.setAttribute("rotation", rotation);
+            let position = cubo.getAttribute("position");
+            position.x += deltaX;
+            position.y -= deltaY;
+            cubo.setAttribute("position", position);
 
             lastX = event.clientX;
             lastY = event.clientY;
         });
 
-        // Evento de soltar o toque
+        // Soltar o cubo
         document.addEventListener("mouseup", () => {
             isDragging = false;
         });
 
-        // Evento de rolagem para aumentar/diminuir o tamanho
+        // Zoom para aumentar/diminuir o cubo
         document.addEventListener("wheel", (event) => {
             scale += event.deltaY * -0.001;
-            scale = Math.max(0.5, Math.min(3, scale)); // Limita entre 0.5 e 3
-            objeto.setAttribute("scale", `${scale} ${scale} ${scale}`);
+            scale = Math.max(0.1, Math.min(2, scale)); // Limita entre 0.1 e 2
+            cubo.setAttribute("scale", `${scale} ${scale} ${scale}`);
         });
 
         // Toque para mudar a cor
-        objeto.addEventListener("click", () => {
-            let corAtual = objeto.getAttribute("material").color;
-            objeto.setAttribute("material", "color", corAtual === "blue" ? "red" : "blue");
+        cubo.addEventListener("click", () => {
+            let corAtual = cubo.getAttribute("material").color;
+            cubo.setAttribute("material", "color", corAtual === "blue" ? "red" : "blue");
         });
 
         // Solicitar permissão de GPS
