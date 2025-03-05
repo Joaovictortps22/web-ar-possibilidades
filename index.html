@@ -2,117 +2,49 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AR Interativo - Cubo</title>
-
-    <!-- Importando A-Frame e AR.js -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js@1.7.2/aframe/build/aframe-ar.min.js"></script>
-</head>
-<body style="margin: 0; overflow: hidden;">
-
-    <!-- Cena de AR -->
-    <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
-        
-        <!-- Luz -->
-        <a-light type="directional" position="1 2 1" intensity="1"></a-light>
-
-        <!-- Cubo Interativo com GPS -->
-        <a-entity id="cubo" 
-                  gps-entity-place="latitude: -23.55052; longitude: -46.633308"
-                  geometry="primitive: box; depth: 0.3; height: 0.3; width: 0.3" 
-                  material="color: blue"
-                  position="0 0 -5"
-                  scale="1 1 1">
-        </a-entity>
-
-        <!-- Câmera com GPS -->
-        <a-entity gps-camera rotation-reader></a-entity>
-
-    </a-scene>
-
-    <script>
-        let cubo = document.getElementById("cubo");
-        let scale = 1;
-        let isDragging = false;
-        let lastX = 0, lastY = 0;
-        let rotation = { x: 0, y: 0 };
-
-        // Toque e arraste para girar
-        document.addEventListener("mousedown", (event) => {
-            isDragging = true;
-            lastX = event.clientX;
-            lastY = event.clientY;
-        });
-
-        document.addEventListener("mousemove", (event) => {
-            if (!isDragging) return;
-            
-            let deltaX = (event.clientX - lastX) * 0.5;
-            let deltaY = (event.clientY - lastY) * 0.5;
-
-            rotation.y += deltaX;
-            rotation.x -= deltaY;
-
-            cubo.setAttribute("rotation", `${rotation.x} ${rotation.y} 0`);
-
-            lastX = event.clientX;
-            lastY = event.clientY;
-        });
-
-        document.addEventListener("mouseup", () => {
-            isDragging = false;
-        });
-
-        // Zoom (scroll do mouse ou pinça no celular)
-        document.addEventListener("wheel", (event) => {
-            scale += event.deltaY * -0.001;
-            scale = Math.max(0.5, Math.min(2, scale)); // Limita entre 0.5 e 2
-            cubo.setAttribute("scale", `${scale} ${scale} ${scale}`);
-        });
-
-        // Toque para mudar a cor
-        cubo.addEventListener("click", () => {
-            let corAtual = cubo.getAttribute("material").color;
-            cubo.setAttribute("material", "color", corAtual === "blue" ? "red" : "blue");
-        });
-
-        // Controle de gestos em touch (zoom e movimento)
-        let touchStartDistance = 0;
-        let initialScale = 1;
-
-        function getTouchDistance(touches) {
-            let dx = touches[0].clientX - touches[1].clientX;
-            let dy = touches[0].clientY - touches[1].clientY;
-            return Math.sqrt(dx * dx + dy * dy);
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WEB - AR</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            color: white;
+            text-align: center;
         }
-
-        document.addEventListener("touchstart", (event) => {
-            if (event.touches.length === 2) {
-                touchStartDistance = getTouchDistance(event.touches);
-                initialScale = scale;
-            }
-        });
-
-        document.addEventListener("touchmove", (event) => {
-            if (event.touches.length === 2) {
-                let newDistance = getTouchDistance(event.touches);
-                scale = initialScale * (newDistance / touchStartDistance);
-                scale = Math.max(0.5, Math.min(2, scale)); // Limita o zoom
-                cubo.setAttribute("scale", `${scale} ${scale} ${scale}`);
-            }
-        });
-
-        // Solicitar permissão de GPS
-        window.onload = function() {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                console.log("Localização obtida: ", position.coords.latitude, position.coords.longitude);
-                cubo.setAttribute("gps-entity-place", `latitude: ${position.coords.latitude}; longitude: ${position.coords.longitude}`);
-            }, function(error) {
-                alert("Ative a localização para a AR funcionar!");
-            });
-        };
-    </script>
-
+        nav {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        nav a {
+            text-decoration: none;
+            color: white;
+            font-size: 18px;
+            padding: 10px 20px;
+            border: 1px solid white;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        nav a:hover {
+            background-color: white;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="astronauta.html">Astronauta</a>
+        <a href="cuboAzul.html">Cubo Azul</a>
+    </nav>
+    <h1>WEB - AR</h1>
 </body>
 </html>
