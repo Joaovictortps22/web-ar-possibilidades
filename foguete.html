@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>WebAR - Modelo 3D</title>
+
+    <!-- Importando model-viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+
+    <style>
+        .home-button {
+          position: absolute;
+          top: 20px;
+          left: 20px;
+          text-decoration: none;
+          color: white;
+          font-size: 18px;
+          padding: 10px 20px;
+          border: 1px solid white;
+          border-radius: 5px;
+          transition: 0.3s;
+        }
+        .home-button:hover {
+            background-color: white;
+            color: black;
+        }
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+        }
+
+        model-viewer {
+            width: 100%;
+            max-width: 600px;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="home-button">&#8962; Início</a>
+
+    <!-- Modelo 3D com botão de AR -->
+    <model-viewer camera-orbit="45deg 115deg auto" camera-controls touch-action="pan-y" autoplay src="../../shared-assets/models/RocketShip.glb" ar alt="A 3D model of a Rocket Ship">
+                  <effect-composer id="selectiveComposer" render-mode="quality">
+                    <selective-bloom-effect strength="5" radius="0.7" threshold="0"></selective-bloom-effect>
+                    <color-grade-effect></color-grade-effect>
+                  </effect-composer>
+                </model-viewer>
+                <script type="module">
+                  const selectiveComposer = document.querySelector("effect-composer#selectiveComposer");
+                  const selectiveBloom = selectiveComposer.querySelector("selective-bloom-effect");
+
+                  selectiveComposer.addEventListener('updated-selection', () => {
+                    const selection = [];
+                    selectiveComposer.selection.forEach((obj) =>
+                      (obj.material.emissive.r > 0
+                        || obj.material.emissive.g > 0
+                        || obj.material.emissive.b > 0) &&
+                      selection.push(obj)
+                    );
+                    selectiveBloom.selection = selection;
+                  });
+                </script>
+
+</body>
+</html>
