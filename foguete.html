@@ -45,27 +45,31 @@
     <a href="index.html" class="home-button">&#8962; Início</a>
 
     <!-- Modelo 3D com botão de AR -->
-    <model-viewer camera-orbit="45deg 115deg auto" camera-controls touch-action="pan-y" autoplay src="../../shared-assets/models/RocketShip.glb" ar alt="A 3D model of a Rocket Ship">
-                  <effect-composer id="selectiveComposer" render-mode="quality">
-                    <selective-bloom-effect strength="5" radius="0.7" threshold="0"></selective-bloom-effect>
-                    <color-grade-effect></color-grade-effect>
-                  </effect-composer>
-                </model-viewer>
-                <script type="module">
-                  const selectiveComposer = document.querySelector("effect-composer#selectiveComposer");
-                  const selectiveBloom = selectiveComposer.querySelector("selective-bloom-effect");
+    <model-viewer camera-orbit="45deg 115deg auto" camera-controls touch-action="pan-y" autoplay 
+        src="https://modelviewer.dev/shared-assets/models/RocketShip.glb" 
+        ar 
+        alt="A 3D model of a Rocket Ship">
+        <effect-composer id="selectiveComposer" render-mode="quality">
+            <selective-bloom-effect strength="5" radius="0.7" threshold="0"></selective-bloom-effect>
+            <color-grade-effect></color-grade-effect>
+        </effect-composer>
+    </model-viewer>
 
-                  selectiveComposer.addEventListener('updated-selection', () => {
-                    const selection = [];
-                    selectiveComposer.selection.forEach((obj) =>
-                      (obj.material.emissive.r > 0
-                        || obj.material.emissive.g > 0
-                        || obj.material.emissive.b > 0) &&
-                      selection.push(obj)
-                    );
-                    selectiveBloom.selection = selection;
-                  });
-                </script>
+    <script type="module">
+        const selectiveComposer = document.querySelector("effect-composer#selectiveComposer");
+        const selectiveBloom = selectiveComposer.querySelector("selective-bloom-effect");
+
+        selectiveComposer.addEventListener('updated-selection', () => {
+            const selection = [];
+            selectiveComposer.selection.forEach((obj) =>
+                (obj.material.emissive.r > 0
+                    || obj.material.emissive.g > 0
+                    || obj.material.emissive.b > 0) &&
+                selection.push(obj)
+            );
+            selectiveBloom.selection = selection;
+        });
+    </script>
 
 </body>
 </html>
