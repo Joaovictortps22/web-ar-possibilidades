@@ -46,14 +46,18 @@
 
     <!-- Modelo 3D com botão de AR -->
     <model-viewer 
-        alt="Aquario simples sem peixes" 
+        alt="Aquário simples sem peixes" 
         src="aquario-simples.glb" 
         ar 
         ar-modes="webxr scene-viewer quick-look"
-        environment-image="https://modelviewer.dev/shared-assets/environments/moon_1k.hdr"
-        shadow-intensity="1" 
+        environment-image="https://modelviewer.dev/shared-assets/environments/spruit_sunrise_1k.hdr"
+        shadow-intensity="1.2"
+        exposure="1.4"
         camera-controls 
-        touch-action="pan-y">
+        touch-action="pan-y"
+        auto-rotate
+        skybox-image="https://modelviewer.dev/shared-assets/environments/aircraft_workshop_01_1k.hdr"
+        style="border-radius: 10px; box-shadow: 0px 0px 20px rgba(255, 255, 255, 0.3);">
     </model-viewer>
 
 </body>
