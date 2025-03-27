@@ -18,21 +18,24 @@
             text-align: center;
         }
         nav {
-            position: absolute;
-            top: 20px;
-            width: 100%;
             display: flex;
-            justify-content: center;
-            gap: 20px;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 400px;
+            gap: 15px;
         }
         nav a {
             text-decoration: none;
             color: white;
             font-size: 18px;
-            padding: 10px 20px;
-            border: 1px solid white;
-            border-radius: 5px;
+            padding: 15px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid white;
+            border-radius: 8px;
             transition: 0.3s;
+            background-color: rgba(255, 255, 255, 0.1);
         }
         nav a:hover {
             background-color: white;
@@ -41,6 +44,7 @@
     </style>
 </head>
 <body>
+    <h1>WEB - AR</h1>
     <nav>
         <a href="astronauta.html">Astronauta</a>
         <a href="cuboAzul.html">Cubo Azul</a>
@@ -49,6 +53,5 @@
         <a href="caveira.html">Caveira</a>
         <a href="model-aquario">Aquario</a>
     </nav>
-    <h1>WEB - AR</h1>
 </body>
 </html>
